@@ -1,0 +1,65 @@
+name: Deploy to HostGator
+
+# Executa o deploy quando há push na branch main
+on:
+  push:
+    branches: [ main, master ]
+  
+  # Permite execução manual do workflow
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js (se necessário para build)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    # Opcional: Executar testes antes do deploy
+    - name: Executar testes (opcional)
+      run: |
+        echo "Executando verificações..."
+        # Adicione aqui comandos de teste se necessário
+        # npm test
+        
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
+        
+        # Pasta local (raiz do repositório)
+        local-dir: ./
+        
+        # Pasta remota no servidor (ajuste conforme necessário)
+        server-dir: /public_html/
+        
+        # Arquivos a serem excluídos do upload
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.env.example
+          **/README.md
+          **/.github/**
+          **/package*.json
+          **/yarn.lock
+          **/*.md
+          
+        # Limpar arquivos remotos que não existem localmente
+        dangerous-clean-slate: false
+        
+        # Verificar se o arquivo foi modificado antes de fazer upload
+        dry-run: false
+        
+        # Log level (standard, verbose, minimal)
+        log-level: standard

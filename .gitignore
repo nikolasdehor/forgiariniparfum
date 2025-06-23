@@ -1,0 +1,66 @@
+# Arquivos de ambiente e configuração sensível
+.env
+.env.local
+.env.production
+.env.staging
+ftp-config.txt
+*.coreftp
+
+# Arquivos com credenciais ou informações sensíveis
+*password*
+*credential*
+*secret*
+config.txt
+settings.txt
+
+# Arquivos de log
+*.log
+logs/
+error.log
+access.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos de editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Arquivos de cache
+cache/
+*.cache
+
+# Arquivos de upload temporários
+uploads/temp/
+temp/
+
+# Arquivos de banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos comprimidos temporários
+*.zip
+*.tar.gz
+*.rar
+
+# Diretórios de node_modules (se usar Node.js no futuro)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos PHP temporários
+*.php~

@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Bloquear acesso a diretórios administrativos e sensíveis
+Disallow: /admin.html
+Disallow: /assets/php/
+Disallow: /.env
+Disallow: /.htaccess
+Disallow: /.git/
+
+# Permitir acesso aos recursos públicos
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /assets/images/
+Allow: /assets/videos/
+Allow: /assets/pdf/
+
+# Sitemap (adicione quando criar um)
+# Sitemap: https://forgiariniparfum.dehor.dev/sitemap.xml
