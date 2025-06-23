@@ -6,12 +6,53 @@ const body = document.body;
 // Função para buscar o último catálogo PDF
 async function getLatestCatalog() {
     try {
-        // Em um ambiente de produção, isso seria feito através de uma chamada AJAX para um script no servidor
-        // Esta é uma implementação simulada para demonstração
-        return 'assets/pdf/perfume-catalog.pdf';
+        const response = await fetch('assets/php/get_catalog_info.php');
+        const data = await response.json();
+
+        if (data.success && data.latest) {
+            return data.latest.file_path;
+        } else {
+            // Fallback: tentar encontrar qualquer PDF na pasta
+            const fallbackPaths = [
+                'assets/pdf/perfume-catalog.pdf',
+                'assets/pdf/catalogo.pdf',
+                'assets/pdf/catalog.pdf'
+            ];
+
+            for (const path of fallbackPaths) {
+                try {
+                    const testResponse = await fetch(path, { method: 'HEAD' });
+                    if (testResponse.ok) {
+                        return path;
+                    }
+                } catch (e) {
+                    // Continuar tentando outros caminhos
+                }
+            }
+
+            // Se nenhum arquivo for encontrado, retornar o primeiro como fallback
+            return fallbackPaths[0];
+        }
     } catch (error) {
         console.error('Erro ao carregar o catálogo:', error);
-        return 'assets/pdf/perfume-catalog.pdf'; // Fallback para o arquivo padrão
+        // Fallback para arquivo padrão
+        return 'assets/pdf/perfume-catalog.pdf';
+    }
+}
+
+// Função para obter informações de todos os catálogos
+async function getAllCatalogs() {
+    try {
+        const response = await fetch('assets/php/get_catalog_info.php');
+        const data = await response.json();
+
+        if (data.success) {
+            return data.catalogs || [];
+        }
+        return [];
+    } catch (error) {
+        console.error('Erro ao carregar catálogos:', error);
+        return [];
     }
 }
 

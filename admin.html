@@ -89,6 +89,12 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
         
         .current-catalog {
             margin-top: 2rem;
@@ -97,15 +103,131 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
+
         .current-catalog h3 {
             margin-bottom: 1rem;
         }
-        
+
         .catalog-details {
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .catalog-list {
+            margin-top: 1rem;
+        }
+
+        .catalog-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #dee2e6;
+        }
+
+        .catalog-item.primary {
+            border-left-color: var(--primary-color);
+            background-color: #fff3cd;
+        }
+
+        .catalog-info {
+            flex-grow: 1;
+        }
+
+        .catalog-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .catalog-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .catalog-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary-set {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-small:hover {
+            opacity: 0.8;
+        }
+
+        .primary-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .upload-progress {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
         }
         
         .back-link {
@@ -231,9 +353,12 @@
                     <div id="upload-status"></div>
                     
                     <div class="current-catalog">
-                        <h3>Catálogo Atual</h3>
+                        <h3>Catálogos Disponíveis</h3>
                         <div id="catalog-details" class="catalog-details">
-                            <p>Carregando informações do catálogo...</p>
+                            <p>Carregando informações dos catálogos...</p>
+                        </div>
+                        <div id="catalog-list" class="catalog-list" style="display: none;">
+                            <!-- Lista de catálogos será carregada aqui -->
                         </div>
                     </div>
                 </div>
@@ -372,38 +497,51 @@
                 showLoginPanel();
             });
             
-            // Função para verificar e exibir informações sobre o catálogo atual
+            // Função para verificar e exibir informações sobre os catálogos
             async function checkCurrentCatalog() {
+                // Mostrar indicador de carregamento
+                catalogDetails.innerHTML = `
+                    <div style="text-align: center; padding: 1rem;">
+                        <div class="loading"></div>
+                        <p style="margin-top: 0.5rem;">Carregando catálogos...</p>
+                    </div>
+                `;
+
                 try {
                     const response = await fetch('assets/php/get_catalog_info.php');
                     const data = await response.json();
-                    
-                    if (data.success) {
+
+                    if (data.success && data.catalogs && data.catalogs.length > 0) {
+                        // Mostrar resumo
                         catalogDetails.innerHTML = `
                             <div>
-                                <p><strong>Nome:</strong> ${data.filename}</p>
-                                <p><strong>Tamanho:</strong> ${formatFileSize(data.filesize)}</p>
-                                <p><strong>Última atualização:</strong> ${formatDate(data.last_modified)}</p>
+                                <p><strong>Total de catálogos:</strong> ${data.total_count}</p>
+                                <p><strong>Mais recente:</strong> ${data.latest.filename}</p>
+                                <p><strong>Última atualização:</strong> ${formatDate(data.latest.last_modified)}</p>
                             </div>
                             <div>
-                                <a href="${data.file_path}" target="_blank" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i> Visualizar
+                                <a href="${data.latest.file_path}" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> Ver Atual
                                 </a>
                             </div>
                         `;
+
+                        // Mostrar lista detalhada
+                        displayCatalogList(data.catalogs, data.latest.filename);
                     } else {
                         catalogDetails.innerHTML = `
                             <p>Nenhum catálogo encontrado. Faça o upload do primeiro catálogo.</p>
                         `;
+                        document.getElementById('catalog-list').style.display = 'none';
                     }
                 } catch (error) {
                     console.error('Erro ao verificar o catálogo:', error);
                     catalogDetails.innerHTML = `
-                        <p>Não foi possível verificar o catálogo atual. O servidor de backend pode não estar configurado corretamente.</p>
+                        <p>Não foi possível verificar os catálogos. O servidor de backend pode não estar configurado corretamente.</p>
                         <p><small>Note: Esta página precisa de um servidor PHP para funcionar completamente.</small></p>
                     `;
-                    
-                    // Versão de fallback para demonstração (simula um catálogo existente)
+
+                    // Versão de fallback para demonstração
                     setTimeout(() => {
                         catalogDetails.innerHTML = `
                             <div>
@@ -420,6 +558,50 @@
                         `;
                     }, 1000);
                 }
+            }
+
+            // Função para exibir lista de catálogos
+            function displayCatalogList(catalogs, primaryFileName) {
+                const catalogList = document.getElementById('catalog-list');
+
+                if (!catalogs || catalogs.length === 0) {
+                    catalogList.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                catalogs.forEach(catalog => {
+                    const isPrimary = catalog.filename === primaryFileName;
+                    html += `
+                        <div class="catalog-item ${isPrimary ? 'primary' : ''}">
+                            <div class="catalog-info">
+                                <div class="catalog-name">
+                                    ${catalog.filename}
+                                    ${isPrimary ? '<span class="primary-badge">ATUAL</span>' : ''}
+                                </div>
+                                <div class="catalog-meta">
+                                    ${formatFileSize(catalog.filesize)} • ${formatDate(catalog.last_modified)}
+                                </div>
+                            </div>
+                            <div class="catalog-actions">
+                                <a href="${catalog.file_path}" target="_blank" class="btn-small btn-view">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                ${!isPrimary ? `
+                                    <button onclick="setPrimaryCatalog('${catalog.filename}')" class="btn-small btn-primary-set">
+                                        <i class="fas fa-star"></i> Definir como Atual
+                                    </button>
+                                ` : ''}
+                                <button onclick="deleteCatalog('${catalog.filename}')" class="btn-small btn-delete">
+                                    <i class="fas fa-trash"></i> Deletar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                catalogList.innerHTML = html;
+                catalogList.style.display = 'block';
             }
             
             // Função para formatar o tamanho do arquivo
@@ -472,20 +654,11 @@
                     
                     if (result.success) {
                         showUploadMessage(result.message, 'success');
-                        
-                        // Atualizar informações do catálogo
-                        catalogDetails.innerHTML = `
-                            <div>
-                                <p><strong>Nome:</strong> ${result.file.name}</p>
-                                <p><strong>Tamanho:</strong> ${formatFileSize(result.file.size)}</p>
-                                <p><strong>Última atualização:</strong> ${formatDate(result.file.last_modified)}</p>
-                            </div>
-                            <div>
-                                <a href="${result.file.path}" target="_blank" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i> Visualizar
-                                </a>
-                            </div>
-                        `;
+
+                        // Recarregar lista de catálogos
+                        setTimeout(() => {
+                            checkCurrentCatalog();
+                        }, 1000);
                     } else {
                         showUploadMessage(result.message, 'error');
                     }
@@ -513,6 +686,82 @@
                 }
             }
             
+            // Função para deletar catálogo
+            async function deleteCatalog(filename) {
+                if (!confirm(`Tem certeza que deseja deletar o catálogo "${filename}"?\n\nEsta ação não pode ser desfeita.`)) {
+                    return;
+                }
+
+                // Mostrar feedback de carregamento
+                showUploadMessage('Deletando catálogo...', 'info');
+
+                try {
+                    const response = await fetch('assets/php/manage_catalogs.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'delete',
+                            filename: filename
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showUploadMessage(result.message, 'success');
+                        // Recarregar lista de catálogos
+                        setTimeout(() => {
+                            checkCurrentCatalog();
+                        }, 1000);
+                    } else {
+                        showUploadMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao deletar catálogo:', error);
+                    showUploadMessage('Erro ao deletar o catálogo.', 'error');
+                }
+            }
+
+            // Função para definir catálogo como principal
+            async function setPrimaryCatalog(filename) {
+                // Mostrar feedback de carregamento
+                showUploadMessage('Definindo como catálogo principal...', 'info');
+
+                try {
+                    const response = await fetch('assets/php/manage_catalogs.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'set_primary',
+                            filename: filename
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showUploadMessage(result.message, 'success');
+                        // Recarregar lista de catálogos
+                        setTimeout(() => {
+                            checkCurrentCatalog();
+                        }, 1000);
+                    } else {
+                        showUploadMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao definir catálogo principal:', error);
+                    showUploadMessage('Erro ao definir catálogo como principal.', 'error');
+                }
+            }
+
+            // Tornar funções globais para uso nos botões
+            window.deleteCatalog = deleteCatalog;
+            window.setPrimaryCatalog = setPrimaryCatalog;
+
             // Verificar autenticação ao carregar a página
             checkAuthentication();
         });
