@@ -147,8 +147,8 @@ jobs:
         # Pasta local (raiz do repositório)
         local-dir: ./
 
-        # Pasta remota no servidor (public_html é onde o site deve ficar)
-        server-dir: /public_html/public_html/
+        # Pasta remota no servidor
+        server-dir: /public_html/
 
         # Arquivos a serem excluídos do upload
         exclude: |
@@ -179,27 +179,16 @@ jobs:
       run: |
         echo "🔍 Verificando deploy..."
 
-        # Aguardar mais tempo para o deploy se propagar
-        echo "⏳ Aguardando 60 segundos para propagação..."
-        sleep 60
+        # Aguardar um pouco para o deploy se propagar
+        sleep 30
 
-        # Verificar se o site está acessível (com retry)
-        echo "🌐 Testando acesso ao site..."
-        for i in {1..3}; do
-          if curl -f -s -L "https://forgiariniparfum.dehor.dev/" > /dev/null; then
-            echo "✅ Site está acessível (tentativa $i)"
-            break
-          else
-            echo "⚠️ Tentativa $i falhou, aguardando 30s..."
-            if [ $i -eq 3 ]; then
-              echo "❌ Site não está acessível após 3 tentativas"
-              echo "🔍 Verificando resposta do servidor..."
-              curl -I "https://forgiariniparfum.dehor.dev/" || echo "Erro na conexão"
-              exit 1
-            fi
-            sleep 30
-          fi
-        done
+        # Verificar se o site está acessível
+        if curl -f -s "https://forgiariniparfum.dehor.dev/" > /dev/null; then
+          echo "✅ Site está acessível"
+        else
+          echo "❌ Site não está acessível"
+          exit 1
+        fi
 
         # Verificar se recursos essenciais estão carregando
         if curl -f -s "https://forgiariniparfum.dehor.dev/assets/css/style.css" > /dev/null; then

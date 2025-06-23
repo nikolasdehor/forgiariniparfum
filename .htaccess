@@ -189,23 +189,3 @@ RedirectMatch 403 /\.vscode
         Header set Cache-Control "public, max-age=86400"
     </FilesMatch>
 </IfModule>
-
-# ================================================================
-# REDIRECIONAMENTOS E URL REWRITING
-# ================================================================
-
-# Forçar HTTPS (descomente se tiver SSL)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# Remover www (descomente se preferir sem www)
-# RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-# RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
-
-# Redirecionamento para index.html se arquivo não existir (SPA)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !^/admin\.html$
-RewriteCond %{REQUEST_URI} !^/assets/
-RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|webp|svg|pdf|mp4|webm|woff|woff2|ttf|eot|ico|json|xml|txt)$
-RewriteRule ^(.*)$ /index.html [L]
