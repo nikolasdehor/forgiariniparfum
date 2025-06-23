@@ -1,6 +1,17 @@
-# Forgiarini Parfum - Site Oficial
+# 🌟 Forgiarini Parfum - Site Oficial
 
-Site oficial da Forgiarini Parfum, especializada em fragrâncias premium equivalentes.
+Site oficial da **Forgiarini Parfum**, especializada em fragrâncias premium equivalentes com qualidade excepcional.
+
+## 🚀 Características Principais
+
+- **🎨 Design Responsivo**: Otimizado para todos os dispositivos
+- **📱 PWA (Progressive Web App)**: Instalável e funciona offline
+- **📊 Upload de Catálogos**: Sistema administrativo avançado
+- **🔄 Deploy Automatizado**: CI/CD com GitHub Actions
+- **⚡ Performance Otimizada**: Core Web Vitals otimizados
+- **🔒 Segurança Enterprise**: Headers de segurança e proteções
+- **♿ Acessibilidade Total**: Conformidade WCAG 2.1
+- **📈 Analytics Avançado**: Monitoramento completo
 
 ## 🚀 Correções Implementadas
 

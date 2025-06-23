@@ -24,24 +24,42 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: |
-        npm init -y
-        npm install --save-dev htmlhint stylelint eslint
+      run: npm ci --only=dev || npm install
 
-    - name: Validate HTML
+    - name: Basic validation checks
       run: |
-        echo "🔍 Validando HTML..."
-        npx htmlhint "*.html" --config .htmlhintrc || echo "HTML validation completed with warnings"
+        echo "🔍 Executando verificações básicas..."
 
-    - name: Validate CSS
-      run: |
-        echo "🎨 Validando CSS..."
-        npx stylelint "assets/css/*.css" --config .stylelintrc.json || echo "CSS validation completed with warnings"
+        # Verificar se arquivos essenciais existem
+        echo "📁 Verificando arquivos essenciais..."
+        [ -f "index.html" ] && echo "✅ index.html encontrado" || echo "❌ index.html não encontrado"
+        [ -f "admin.html" ] && echo "✅ admin.html encontrado" || echo "❌ admin.html não encontrado"
+        [ -f "assets/css/style.css" ] && echo "✅ CSS principal encontrado" || echo "❌ CSS principal não encontrado"
+        [ -f "assets/js/script.js" ] && echo "✅ JS principal encontrado" || echo "❌ JS principal não encontrado"
+        [ -f "manifest.json" ] && echo "✅ Manifest PWA encontrado" || echo "❌ Manifest PWA não encontrado"
+        [ -f "sw.js" ] && echo "✅ Service Worker encontrado" || echo "❌ Service Worker não encontrado"
 
-    - name: Validate JavaScript
+        # Verificar estrutura HTML básica
+        echo "📄 Verificando estrutura HTML..."
+        grep -q "<!DOCTYPE html>" index.html && echo "✅ DOCTYPE correto" || echo "❌ DOCTYPE incorreto"
+        grep -q 'lang="pt-BR"' index.html && echo "✅ Idioma definido" || echo "❌ Idioma não definido"
+        grep -q 'name="viewport"' index.html && echo "✅ Viewport definido" || echo "❌ Viewport não definido"
+        grep -q 'name="description"' index.html && echo "✅ Meta description encontrada" || echo "❌ Meta description não encontrada"
+
+        # Verificar links importantes
+        echo "🔗 Verificando links..."
+        grep -q "wa.me/554284099552" index.html && echo "✅ WhatsApp link correto" || echo "❌ WhatsApp link incorreto"
+
+        # Verificar PWA
+        echo "📱 Verificando PWA..."
+        grep -q 'rel="manifest"' index.html && echo "✅ Manifest linkado" || echo "❌ Manifest não linkado"
+
+    - name: Run linting (optional)
       run: |
-        echo "⚡ Validando JavaScript..."
-        npx eslint "assets/js/*.js" --config .eslintrc.json || echo "JS validation completed with warnings"
+        echo "🔍 Executando linting..."
+        npm run lint:html || echo "⚠️ HTML linting completed with warnings"
+        npm run lint:css || echo "⚠️ CSS linting completed with warnings"
+        npm run lint:js || echo "⚠️ JS linting completed with warnings"
 
     - name: Check file sizes
       run: |

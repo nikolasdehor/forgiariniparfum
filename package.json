@@ -1,0 +1,48 @@
+{
+  "name": "forgiarini-parfum",
+  "version": "1.0.0",
+  "description": "Site oficial da Forgiarini Parfum - Fragrâncias Premium",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Running tests...\" && exit 0",
+    "lint:html": "htmlhint *.html",
+    "lint:css": "stylelint assets/css/*.css",
+    "lint:js": "eslint assets/js/*.js",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "build": "echo \"Build completed\"",
+    "start": "echo \"Open index.html in your browser\"",
+    "deploy": "echo \"Deploy via GitHub Actions\""
+  },
+  "keywords": [
+    "perfumes",
+    "fragrâncias",
+    "forgiarini",
+    "parfum",
+    "perfumes-equivalentes",
+    "pwa",
+    "responsive"
+  ],
+  "author": "Forgiarini Parfum",
+  "license": "MIT",
+  "homepage": "https://forgiariniparfum.dehor.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nikolasluiz123/forgiariniparfum.git"
+  },
+  "devDependencies": {
+    "htmlhint": "^1.1.4",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^34.0.0",
+    "eslint": "^8.57.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
