@@ -1,4 +1,10 @@
 <?php
+// Upload de catálogo com segurança avançada
+require_once 'security.php';
+
+// Inicializar sistema de segurança
+$security = initSecurity();
+
 // Configurações
 $uploadDir = '../pdf/';
 $allowedExtensions = ['pdf'];

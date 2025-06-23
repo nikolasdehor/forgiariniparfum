@@ -3,75 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Forgiarini Parfum - Fragrâncias premium equivalentes com qualidade excepcional. Perfumes autorais e catálogo completo com os melhores preços.">
+    <meta name="keywords" content="perfumes, fragrâncias, perfumes equivalentes, Forgiarini Parfum, perfumes premium, perfumes autorais">
+    <meta name="author" content="Forgiarini Parfum">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://forgiariniparfum.dehor.dev/">
+    <meta property="og:title" content="Forgiarini Parfum - Fragrâncias Premium">
+    <meta property="og:description" content="Descubra nossa exclusiva coleção de perfumes equivalentes premium com qualidade excepcional.">
+    <meta property="og:image" content="https://forgiariniparfum.dehor.dev/assets/images/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://forgiariniparfum.dehor.dev/">
+    <meta property="twitter:title" content="Forgiarini Parfum - Fragrâncias Premium">
+    <meta property="twitter:description" content="Descubra nossa exclusiva coleção de perfumes equivalentes premium com qualidade excepcional.">
+    <meta property="twitter:image" content="https://forgiariniparfum.dehor.dev/assets/images/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Forgiarini Parfum">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
     <title>Forgiarini Parfum - Catálogo de Fragrâncias Premium</title>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="assets/css/style.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" as="style">
+
+    <!-- Critical CSS inline (será adicionado depois) -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/ui-enhancements.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Forgiarini Parfum",
+        "url": "https://forgiariniparfum.dehor.dev",
+        "logo": "https://forgiariniparfum.dehor.dev/assets/images/logo.png",
+        "description": "Especializada em fragrâncias premium equivalentes com qualidade excepcional",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+55-42-8409-9552",
+            "contactType": "customer service",
+            "availableLanguage": "Portuguese"
+        },
+        "sameAs": [
+            "https://wa.me/554284099552"
+        ]
+    }
+    </script>
 </head>
 <body>
-    <header class="header">
+    <header class="header" role="banner">
         <div class="container">
-            <div class="logo">Forgiarini Parfum</div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#home">Início</a></li>
-                    <li><a href="#about">Sobre</a></li>
-                    <li><a href="#signature">Perfume Autoral</a></li>
-                    <li><a href="#prices">Tabela de Valores</a></li>
-                    <li><a href="#contact">Contato</a></li>
+            <div class="logo" role="img" aria-label="Logotipo Forgiarini Parfum">Forgiarini Parfum</div>
+            <nav class="main-nav" role="navigation" aria-label="Menu principal de navegação">
+                <ul role="menubar">
+                    <li role="none"><a href="#home" role="menuitem">Início</a></li>
+                    <li role="none"><a href="#about" role="menuitem">Sobre</a></li>
+                    <li role="none"><a href="#signature" role="menuitem">Perfume Autoral</a></li>
+                    <li role="none"><a href="#prices" role="menuitem">Tabela de Valores</a></li>
+                    <li role="none"><a href="#contact" role="menuitem">Contato</a></li>
                 </ul>
-                <div class="mobile-menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <button class="mobile-menu-toggle" aria-label="Abrir menu de navegação mobile" aria-expanded="false" aria-controls="main-nav">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Menu</span>
+                </button>
             </nav>
         </div>
     </header>
 
-    <section id="home" class="hero">
-        <div class="video-background">
-            <video autoplay muted loop playsinline id="hero-video">
-                <source src="assets/videos/Vídeo do WhatsApp de 2025-04-28 à(s) 13.56.15_49b7caeb.mp4" type="video/mp4">
-            </video>
-        </div>
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="hero-content">
-                <h1>Descubra Sua Fragrância Perfeita</h1>
-                <p>Conheça nossa exclusiva coleção de perfumes equivalentes premium</p>
-                <div class="cta-buttons">
-                    <a href="#" id="catalog-btn" class="btn btn-primary">
-                        <i class="fas fa-book-open"></i> Ver Catálogo
-                    </a>
-                    <a href="https://wa.me/554284099552?text=Olá!%20Gostaria%20de%20conversar%20sobre%20os%20perfumes%20Forgiarini" target="_blank" class="btn btn-secondary">
-                        <i class="fab fa-whatsapp"></i> Fale Conosco
-                    </a>
+    <main>
+        <section id="home" class="hero" role="banner" aria-label="Seção principal - Forgiarini Parfum">
+            <div class="video-background">
+                <video autoplay muted loop playsinline id="hero-video" aria-label="Vídeo promocional mostrando fragrâncias Forgiarini">
+                    <source src="assets/videos/Vídeo do WhatsApp de 2025-04-28 à(s) 13.56.15_49b7caeb.mp4" type="video/mp4">
+                    <p>Seu navegador não suporta vídeos HTML5. <a href="assets/images/hero-fallback.jpg">Ver imagem alternativa</a></p>
+                </video>
+            </div>
+            <div class="overlay" aria-hidden="true"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Descubra Sua Fragrância Perfeita</h1>
+                    <p>Conheça nossa exclusiva coleção de perfumes equivalentes premium</p>
+                    <div class="cta-buttons">
+                        <a href="#" id="catalog-btn" class="btn btn-primary" aria-label="Abrir catálogo de perfumes em nova aba">
+                            <i class="fas fa-book-open" aria-hidden="true"></i> Ver Catálogo
+                        </a>
+                        <a href="https://wa.me/554284099552?text=Olá!%20Gostaria%20de%20conversar%20sobre%20os%20perfumes%20Forgiarini" target="_blank" class="btn btn-secondary" aria-label="Entrar em contato via WhatsApp - abre em nova aba">
+                            <i class="fab fa-whatsapp" aria-hidden="true"></i> Fale Conosco
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="about" class="about-section">
-        <div class="container">
-            <h2>Sobre Nossa Empresa</h2>
+        <section id="about" class="about-section" role="region" aria-labelledby="about-heading">
+            <div class="container">
+                <h2 id="about-heading">Sobre Nossa Empresa</h2>
             <div class="about-content">
                 <div class="about-text">
                     <p>Na Forgiarini Parfum, somos especializados em criar alternativas de fragrâncias de alta qualidade que capturam a essência dos perfumes de grife por uma fração do preço.</p>
                     <p>Nossos perfumes são elaborados com ingredientes premium, proporcionando a mesma experiência olfativa que as marcas de luxo, enquanto são acessíveis a todos os entusiastas de fragrâncias.</p>
                     <p>Cada um de nossos produtos passa por rigorosos testes de qualidade para garantir longevidade e autenticidade, proporcionando uma experiência olfativa excepcional que dura o dia todo.</p>
                 </div>
-                <div class="about-image">
-                    <img src="assets/images/perfume-laboratory.jpg" alt="Processo de Criação de Perfumes">
+                <div class="about-image animate-on-scroll">
+                    <img data-src="assets/images/perfume-laboratory.jpg"
+                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0f0f0'/%3E%3C/svg%3E"
+                         alt="Processo de Criação de Perfumes - Laboratório Forgiarini Parfum"
+                         loading="lazy"
+                         class="lazy">
                 </div>
             </div>
         </div>
-    </section>
+        </section>
 
-    <section id="signature" class="signature-section">
-        <div class="container">
-            <h2>Nosso Perfume Autoral</h2>
+        <section id="signature" class="signature-section" role="region" aria-labelledby="signature-heading">
+            <div class="container">
+                <h2 id="signature-heading">Nosso Perfume Autoral</h2>
             <div class="signature-content">
-                <div class="signature-image">
-                    <img src="assets/images/signature-perfume.jpg" alt="Perfume Autoral Forgiarini">
+                <div class="signature-image animate-on-scroll">
+                    <img data-src="assets/images/signature-perfume.jpg"
+                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect width='400' height='500' fill='%23f0f0f0'/%3E%3C/svg%3E"
+                         alt="Sexy By Forgiarini - Perfume Autoral Exclusivo"
+                         loading="lazy"
+                         class="lazy">
                 </div>
                 <div class="signature-text">
                     <h3>Sexy By Forgiarini </h3>
@@ -102,8 +174,12 @@
         <div class="container">
             <h2>Tabela de Valores</h2>
             <div class="prices-content">
-                <div class="prices-image">
-                    <img src="assets/images/preços.jpg" alt="Tabela de Valores dos Perfumes Forgiarini">
+                <div class="prices-image animate-on-scroll">
+                    <img data-src="assets/images/preços.jpg"
+                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600'%3E%3Crect width='400' height='600' fill='%23f0f0f0'/%3E%3C/svg%3E"
+                         alt="Tabela de Valores dos Perfumes Forgiarini - Preços Acessíveis"
+                         loading="lazy"
+                         class="lazy">
                 </div>
                 <div class="prices-text">
                     <p>Confira nossa tabela de valores e descubra como é possível ter fragrâncias de alta qualidade por preços acessíveis.</p>
@@ -140,6 +216,24 @@
         </div>
     </footer>
 
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/ui-enhancements.js" defer></script>
+    <script src="assets/js/analytics.js" defer></script>
+    <script src="assets/js/pwa.js" defer></script>
+    <script src="assets/js/accessibility.js" defer></script>
+    <script src="assets/js/performance.js" defer></script>
+    <script src="assets/js/script.js" defer></script>
+
+    <!-- Testes automatizados (apenas em desenvolvimento) -->
+    <script>
+        if (window.location.hostname === 'localhost' ||
+            window.location.hostname === '127.0.0.1' ||
+            window.location.search.includes('test=true')) {
+            const testScript = document.createElement('script');
+            testScript.src = 'tests/test-runner.js';
+            testScript.defer = true;
+            document.head.appendChild(testScript);
+        }
+    </script>
+    </main>
 </body>
 </html>

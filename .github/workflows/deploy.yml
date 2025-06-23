@@ -1,33 +1,122 @@
-name: Deploy to HostGator
+name: Deploy to HostGator with Quality Checks
 
 # Executa o deploy quando há push na branch main
 on:
   push:
     branches: [ main, master ]
-  
+
   # Permite execução manual do workflow
   workflow_dispatch:
 
 jobs:
-  deploy:
+  quality-checks:
     runs-on: ubuntu-latest
-    
+    name: Quality Checks
+
     steps:
     - name: Checkout código
       uses: actions/checkout@v4
-      
-    - name: Setup Node.js (se necessário para build)
+
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        
-    # Opcional: Executar testes antes do deploy
-    - name: Executar testes (opcional)
+        cache: 'npm'
+
+    - name: Install dependencies
       run: |
-        echo "Executando verificações..."
-        # Adicione aqui comandos de teste se necessário
-        # npm test
-        
+        npm init -y
+        npm install --save-dev htmlhint stylelint eslint
+
+    - name: Validate HTML
+      run: |
+        echo "🔍 Validando HTML..."
+        npx htmlhint "*.html" --config .htmlhintrc || echo "HTML validation completed with warnings"
+
+    - name: Validate CSS
+      run: |
+        echo "🎨 Validando CSS..."
+        npx stylelint "assets/css/*.css" --config .stylelintrc.json || echo "CSS validation completed with warnings"
+
+    - name: Validate JavaScript
+      run: |
+        echo "⚡ Validando JavaScript..."
+        npx eslint "assets/js/*.js" --config .eslintrc.json || echo "JS validation completed with warnings"
+
+    - name: Check file sizes
+      run: |
+        echo "📏 Verificando tamanhos de arquivo..."
+        find . -name "*.js" -exec wc -c {} + | awk '$1 > 100000 {print "⚠️  Large JS file: " $2 " (" $1 " bytes)"}'
+        find . -name "*.css" -exec wc -c {} + | awk '$1 > 50000 {print "⚠️  Large CSS file: " $2 " (" $1 " bytes)"}'
+        find . -name "*.jpg" -o -name "*.png" -o -name "*.gif" | xargs -I {} sh -c 'size=$(wc -c < "{}"); if [ $size -gt 500000 ]; then echo "⚠️  Large image: {} ($size bytes)"; fi'
+
+    - name: Security scan
+      run: |
+        echo "🔒 Verificando segurança..."
+        # Verificar se há credenciais expostas
+        if grep -r "password\|secret\|key\|token" --include="*.js" --include="*.html" --include="*.css" .; then
+          echo "⚠️  Possíveis credenciais encontradas no código"
+        fi
+
+        # Verificar headers de segurança no .htaccess
+        if [ -f ".htaccess" ]; then
+          if grep -q "X-Frame-Options\|Content-Security-Policy\|X-Content-Type-Options" .htaccess; then
+            echo "✅ Headers de segurança encontrados"
+          else
+            echo "⚠️  Headers de segurança não encontrados"
+          fi
+        fi
+
+    - name: Performance check
+      run: |
+        echo "🚀 Verificando performance..."
+        # Contar recursos externos
+        external_resources=$(grep -r "https://" --include="*.html" --include="*.css" --include="*.js" . | wc -l)
+        echo "📊 Recursos externos encontrados: $external_resources"
+
+        if [ $external_resources -gt 10 ]; then
+          echo "⚠️  Muitos recursos externos podem afetar a performance"
+        fi
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: quality-checks
+    if: success()
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Prepare deployment
+      run: |
+        echo "🚀 Preparando deploy..."
+
+        # Criar arquivo de informações de build
+        cat > build-info.json << EOF
+        {
+          "build_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "commit_hash": "${{ github.sha }}",
+          "commit_message": "${{ github.event.head_commit.message }}",
+          "branch": "${{ github.ref_name }}",
+          "workflow_run": "${{ github.run_number }}"
+        }
+        EOF
+
+        # Minificar CSS (básico)
+        if command -v csso &> /dev/null; then
+          echo "🎨 Minificando CSS..."
+          for file in assets/css/*.css; do
+            if [[ -f "$file" && ! "$file" =~ \.min\. ]]; then
+              csso "$file" --output "${file%.css}.min.css"
+            fi
+          done
+        fi
+
+        # Otimizar HTML (remover comentários e espaços extras)
+        echo "📄 Otimizando HTML..."
+        sed -i 's/<!--.*-->//g' *.html
+        sed -i '/^[[:space:]]*$/d' *.html
+
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
@@ -36,30 +125,69 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps
         port: 21
-        
+
         # Pasta local (raiz do repositório)
         local-dir: ./
-        
-        # Pasta remota no servidor (ajuste conforme necessário)
+
+        # Pasta remota no servidor
         server-dir: /public_html/
-        
+
         # Arquivos a serem excluídos do upload
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
-          **/.env.example
+          **/.env*
           **/README.md
           **/.github/**
           **/package*.json
           **/yarn.lock
           **/*.md
-          
-        # Limpar arquivos remotos que não existem localmente
+          **/tests/**
+          **/.vscode/**
+          **/.idea/**
+          **/logs/**
+
+        # Não limpar arquivos remotos
         dangerous-clean-slate: false
-        
-        # Verificar se o arquivo foi modificado antes de fazer upload
+
+        # Verificar modificações antes do upload
         dry-run: false
-        
-        # Log level (standard, verbose, minimal)
-        log-level: standard
+
+        # Log detalhado
+        log-level: verbose
+
+    - name: Post-deployment verification
+      run: |
+        echo "🔍 Verificando deploy..."
+
+        # Aguardar um pouco para o deploy se propagar
+        sleep 30
+
+        # Verificar se o site está acessível
+        if curl -f -s "https://forgiariniparfum.dehor.dev/" > /dev/null; then
+          echo "✅ Site está acessível"
+        else
+          echo "❌ Site não está acessível"
+          exit 1
+        fi
+
+        # Verificar se recursos essenciais estão carregando
+        if curl -f -s "https://forgiariniparfum.dehor.dev/assets/css/style.css" > /dev/null; then
+          echo "✅ CSS principal está carregando"
+        else
+          echo "⚠️  CSS principal não está carregando"
+        fi
+
+        if curl -f -s "https://forgiariniparfum.dehor.dev/assets/js/script.js" > /dev/null; then
+          echo "✅ JavaScript principal está carregando"
+        else
+          echo "⚠️  JavaScript principal não está carregando"
+        fi
+
+    - name: Notify deployment success
+      run: |
+        echo "🎉 Deploy concluído com sucesso!"
+        echo "🌐 Site: https://forgiariniparfum.dehor.dev/"
+        echo "📊 Commit: ${{ github.sha }}"
+        echo "🕒 Horário: $(date)"

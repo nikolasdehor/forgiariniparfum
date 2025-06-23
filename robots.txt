@@ -15,5 +15,8 @@ Allow: /assets/images/
 Allow: /assets/videos/
 Allow: /assets/pdf/
 
-# Sitemap (adicione quando criar um)
-# Sitemap: https://forgiariniparfum.dehor.dev/sitemap.xml
+# Sitemap
+Sitemap: https://forgiariniparfum.dehor.dev/sitemap.xml
+
+# Crawl-delay para evitar sobrecarga
+Crawl-delay: 1

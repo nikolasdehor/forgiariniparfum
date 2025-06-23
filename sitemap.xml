@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    <!-- Página Principal -->
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://forgiariniparfum.dehor.dev/assets/images/hero-background.jpg</image:loc>
+            <image:title>Forgiarini Parfum - Fragrâncias Premium</image:title>
+            <image:caption>Coleção exclusiva de perfumes equivalentes premium</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://forgiariniparfum.dehor.dev/assets/images/signature-perfume.jpg</image:loc>
+            <image:title>Sexy By Forgiarini - Perfume Autoral</image:title>
+            <image:caption>Perfume autoral exclusivo da marca Forgiarini</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://forgiariniparfum.dehor.dev/assets/images/perfume-laboratory.jpg</image:loc>
+            <image:title>Laboratório de Criação de Perfumes</image:title>
+            <image:caption>Processo artesanal de criação de fragrâncias</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Catálogos PDF (dinâmico - será atualizado automaticamente) -->
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/assets/pdf/</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Seções da página principal -->
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/#sobre</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/#perfume-autoral</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/#precos</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://forgiariniparfum.dehor.dev/#contato</loc>
+        <lastmod>2025-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+</urlset>

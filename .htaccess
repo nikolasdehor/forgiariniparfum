@@ -45,28 +45,70 @@ Options -Indexes
     Deny from all
 </Files>
 
-# Adicionar cabeçalhos de segurança
+# Adicionar cabeçalhos de segurança avançados
 <IfModule mod_headers.c>
+    # Content Security Policy (CSP)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self'; connect-src 'self' https://www.google-analytics.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+
+    # Proteção contra clickjacking
+    Header set X-Frame-Options "DENY"
+
+    # Prevenir MIME sniffing
     Header set X-Content-Type-Options "nosniff"
+
+    # Proteção XSS
     Header set X-XSS-Protection "1; mode=block"
-    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Controlar informações de referrer
     Header set Referrer-Policy "strict-origin-when-cross-origin"
-    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # HTTPS obrigatório
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Controlar APIs do navegador
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+
+    # Remover informações do servidor
     Header unset Server
     Header unset X-Powered-By
+    Header unset X-AspNet-Version
+    Header unset X-AspNetMvc-Version
 </IfModule>
 
 # Bloquear acesso a arquivos de backup e temporários
-<FilesMatch "\.(bak|backup|old|tmp|temp|log|sql|gz|tar|zip)$">
+<FilesMatch "\.(bak|backup|old|tmp|temp|log|sql|gz|tar|zip|swp)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
 
 # Bloquear tentativas de acesso a arquivos de configuração
-<FilesMatch "\.(ini|conf|config|inc)$">
+<FilesMatch "\.(ini|conf|config|inc|htpasswd)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
+
+# Proteção contra SQL Injection e XSS
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*object.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*embed.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (SELECT|UNION|INSERT|DROP|DELETE|UPDATE|CREATE|ALTER|EXEC) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# Proteção contra User Agents maliciosos
+RewriteCond %{HTTP_USER_AGENT} (libwww-perl|wget|python|nikto|curl|scan|java|winhttp|clshttp|loader) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (%0A|%0D|%27|%3C|%3E|%00) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (;|<|>|'|"|\)|\(|%0A|%0D|%22|%27|%28|%3C|%3E|%00).*(libwww-perl|wget|python|nikto|curl|scan|java|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# Bloquear acesso direto a diretórios sensíveis
+RedirectMatch 403 /\.git
+RedirectMatch 403 /\.env
+RedirectMatch 403 /node_modules
+RedirectMatch 403 /vendor
+RedirectMatch 403 /\.vscode
 
 # Comprimir arquivos para melhorar o desempenho
 <IfModule mod_deflate.c>
