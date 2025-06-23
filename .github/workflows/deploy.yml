@@ -148,7 +148,7 @@ jobs:
         local-dir: ./
 
         # Pasta remota no servidor (raiz do domínio)
-        server-dir: /
+        server-dir: /public_html/
 
         # Arquivos a serem excluídos do upload
         exclude: |
