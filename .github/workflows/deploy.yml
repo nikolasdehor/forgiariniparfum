@@ -147,8 +147,8 @@ jobs:
         # Pasta local (raiz do repositório)
         local-dir: ./
 
-        # Pasta remota no servidor
-        server-dir: /public_html/
+        # Pasta remota no servidor (raiz)
+        server-dir: /
 
         # Arquivos a serem excluídos do upload
         exclude: |

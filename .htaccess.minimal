@@ -1,0 +1,7 @@
+# Configuração MÍNIMA para resolver erro 403
+# Apenas o essencial para o site funcionar
+
+DirectoryIndex index.html
+Options -Indexes
+
+# Fim - Sem mais regras para evitar conflitos
