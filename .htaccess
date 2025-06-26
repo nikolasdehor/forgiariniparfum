@@ -1,54 +1,25 @@
-# Ativar o motor de reescrita
+# Configuração básica para resolver erro 403
 RewriteEngine On
 
-# Definir a pasta base para o site
-RewriteBase /
-
-# Definir o index.html como página padrão
+# Definir index.html como página padrão
 DirectoryIndex index.html
-
-# Redirecionar automaticamente para index.html quando acessar apenas o domínio
-RewriteCond %{REQUEST_URI} ^/$
-RewriteRule ^$ index.html [L]
-
-# Permitir acesso direto a arquivos existentes
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^.*$ - [L]
-
-# Permitir acesso direto a diretórios existentes
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^.*$ - [L]
-
-# Redirecionar URLs sem extensão para .html (se o arquivo existir)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^(.*)$ $1.html [L]
 
 # Impedir listagem de diretórios
 Options -Indexes
 
-# Proteger arquivos sensíveis
-<Files .htaccess>
-    Order Allow,Deny
-    Deny from all
+# Proteger apenas arquivos críticos
+<Files ".htaccess">
+    Require all denied
 </Files>
 
-<Files .env>
-    Order Allow,Deny
-    Deny from all
-</Files>
-
-# Proteger diretórios de sistema
-<Files ~ "^\.">
-    Order Allow,Deny
-    Deny from all
+<Files ".env">
+    Require all denied
 </Files>
 
 # Adicionar cabeçalhos de segurança avançados
 <IfModule mod_headers.c>
-    # Content Security Policy (CSP)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self'; connect-src 'self' https://www.google-analytics.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+    # Content Security Policy (CSP) - Simplificado
+    # Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; img-src 'self' data: https:; media-src 'self' https:;"
 
     # Proteção contra clickjacking
     Header set X-Frame-Options "DENY"
@@ -87,21 +58,21 @@ Options -Indexes
     Deny from all
 </FilesMatch>
 
-# Proteção contra SQL Injection e XSS
-RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
-RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
-RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
-RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
-RewriteCond %{QUERY_STRING} (\<|%3C).*object.*(\>|%3E) [NC,OR]
-RewriteCond %{QUERY_STRING} (\<|%3C).*embed.*(\>|%3E) [NC,OR]
-RewriteCond %{QUERY_STRING} (SELECT|UNION|INSERT|DROP|DELETE|UPDATE|CREATE|ALTER|EXEC) [NC]
-RewriteRule ^(.*)$ - [F,L]
+# Proteção contra SQL Injection e XSS (TEMPORARIAMENTE DESABILITADO)
+# RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+# RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+# RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+# RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+# RewriteCond %{QUERY_STRING} (\<|%3C).*object.*(\>|%3E) [NC,OR]
+# RewriteCond %{QUERY_STRING} (\<|%3C).*embed.*(\>|%3E) [NC,OR]
+# RewriteCond %{QUERY_STRING} (SELECT|UNION|INSERT|DROP|DELETE|UPDATE|CREATE|ALTER|EXEC) [NC]
+# RewriteRule ^(.*)$ - [F,L]
 
-# Proteção contra User Agents maliciosos
-RewriteCond %{HTTP_USER_AGENT} (libwww-perl|wget|python|nikto|curl|scan|java|winhttp|clshttp|loader) [NC,OR]
-RewriteCond %{HTTP_USER_AGENT} (%0A|%0D|%27|%3C|%3E|%00) [NC,OR]
-RewriteCond %{HTTP_USER_AGENT} (;|<|>|'|"|\)|\(|%0A|%0D|%22|%27|%28|%3C|%3E|%00).*(libwww-perl|wget|python|nikto|curl|scan|java|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC]
-RewriteRule ^(.*)$ - [F,L]
+# Proteção contra User Agents maliciosos (TEMPORARIAMENTE DESABILITADO)
+# RewriteCond %{HTTP_USER_AGENT} (libwww-perl|wget|python|nikto|curl|scan|java|winhttp|clshttp|loader) [NC,OR]
+# RewriteCond %{HTTP_USER_AGENT} (%0A|%0D|%27|%3C|%3E|%00) [NC,OR]
+# RewriteCond %{HTTP_USER_AGENT} (;|<|>|'|"|\)|\(|%0A|%0D|%22|%27|%28|%3C|%3E|%00).*(libwww-perl|wget|python|nikto|curl|scan|java|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC]
+# RewriteRule ^(.*)$ - [F,L]
 
 # Bloquear acesso direto a diretórios sensíveis
 RedirectMatch 403 /\.git
