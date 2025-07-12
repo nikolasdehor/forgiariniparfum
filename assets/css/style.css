@@ -487,7 +487,7 @@ video {
     display: block;
     -webkit-playsinline: true;
     -moz-playsinline: true;
-    playsinline: true;
+    /* playsinline removido - é atributo HTML, não CSS */
 }
 
 /* Prices Section */
@@ -955,8 +955,7 @@ video {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    /* Removido backdrop-filter que estava causando problemas */
     transform: translateZ(0); /* Force hardware acceleration */
 }
 
