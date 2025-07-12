@@ -7,11 +7,14 @@ ftp-config.txt
 *.coreftp
 
 # Arquivos com credenciais ou informações sensíveis
-*password*
 *credential*
 *secret*
 config.txt
 settings.txt
+
+# Excluir arquivos de senha, mas permitir código PHP de verificação
+!**/check_password.php
+!**/verify_password.php
 
 # Arquivos de log
 *.log
@@ -45,6 +48,17 @@ cache/
 # Arquivos de upload temporários
 uploads/temp/
 temp/
+
+# Pasta scripts completa - TODOS os scripts bloqueados por segurança
+scripts/
+*-auth.html
+*-deploy.html
+test-*.html
+VALIDATION_REPORT.md
+SECURITY_IMPLEMENTATION.md
+COMMIT_SECURITY_REPORT.md
+FILES_TO_COMMIT.md
+SECURITY.md
 
 # Arquivos de banco de dados local
 *.db

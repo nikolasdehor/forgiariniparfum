@@ -1,54 +1,272 @@
 <?php
-// Sistema de Segurança Avançado para Forgiarini Parfum
-// ====================================================
+/**
+ * Sistema de Segurança Avançado para Forgiarini Parfum
+ * Integrado com configurações do arquivo .env
+ */
 
-class SecurityManager {
-    private $logFile;
-    private $rateLimitFile;
-    private $maxRequests;
-    private $timeWindow;
-    private $blockDuration;
-    
-    public function __construct() {
-        $this->logFile = __DIR__ . '/../../logs/security.log';
-        $this->rateLimitFile = __DIR__ . '/../../logs/rate_limit.json';
-        $this->maxRequests = 100; // Máximo de requests por IP
-        $this->timeWindow = 3600; // Janela de tempo em segundos (1 hora)
-        $this->blockDuration = 7200; // Duração do bloqueio em segundos (2 horas)
+// Incluir carregador de ambiente
+require_once 'env_loader.php';
+
+class SecurityHelper {
+    private static $logFile = null;
+
+    /**
+     * Inicializa o sistema de segurança
+     */
+    public static function init() {
+        // Carregar variáveis do arquivo .env
+        EnvLoader::load();
         
-        $this->ensureLogDirectory();
-    }
-    
-    // Garantir que o diretório de logs existe
-    private function ensureLogDirectory() {
-        $logDir = dirname($this->logFile);
+        // Definir arquivo de log baseado no ambiente
+        $environment = EnvLoader::get('ENVIRONMENT', 'production');
+        if ($environment === 'development') {
+            self::$logFile = __DIR__ . '/../../logs/security_dev.log';
+        } else {
+            self::$logFile = __DIR__ . '/../../logs/security.log';
+        }
+
+        // Criar diretório de logs se não existir
+        $logDir = dirname(self::$logFile);
         if (!is_dir($logDir)) {
-            mkdir($logDir, 0755, true);
+            mkdir($logDir, 0750, true);
+        }
+
+        // Configurar headers de segurança
+        self::setSecurityHeaders();
+    }
+
+    /**
+     * Define headers de segurança
+     */
+    public static function setSecurityHeaders() {
+        if (!headers_sent()) {
+            header('X-Content-Type-Options: nosniff');
+            header('X-Frame-Options: DENY');
+            header('X-XSS-Protection: 1; mode=block');
+            header('Referrer-Policy: strict-origin-when-cross-origin');
+            
+            // Content Security Policy
+            $csp = "default-src 'self'; " .
+                   "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+                   "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+                   "font-src 'self' https://fonts.gstatic.com; " .
+                   "img-src 'self' data: https:; " .
+                   "connect-src 'self'";
+            
+            header("Content-Security-Policy: $csp");
         }
     }
-    
-    // Rate Limiting
-    public function checkRateLimit($ip = null) {
-        if ($ip === null) {
-            $ip = $this->getClientIP();
+
+    /**
+     * Valida e sanitiza entrada de arquivos
+     */
+    public static function validateFileUpload($file, $allowedTypes = ['application/pdf'], $maxSize = 10485760) {
+        if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('Erro no upload do arquivo');
         }
-        
-        $rateLimitData = $this->loadRateLimitData();
-        $currentTime = time();
-        
-        // Limpar dados antigos
-        $this->cleanOldRateLimitData($rateLimitData, $currentTime);
-        
-        // Verificar se IP está bloqueado
-        if (isset($rateLimitData['blocked'][$ip])) {
-            if ($rateLimitData['blocked'][$ip] > $currentTime) {
-                $this->logSecurityEvent('rate_limit_blocked', $ip, 'IP ainda bloqueado');
-                return false;
-            } else {
-                // Remover bloqueio expirado
-                unset($rateLimitData['blocked'][$ip]);
+
+        // Verificar tamanho do arquivo (padrão: 10MB)
+        if ($file['size'] > $maxSize) {
+            throw new Exception('Arquivo muito grande. Tamanho máximo: ' . round($maxSize / 1048576, 1) . 'MB');
+        }
+
+        // Verificar tipo MIME
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($detectedType, $allowedTypes)) {
+            throw new Exception('Tipo de arquivo não permitido');
+        }
+
+        // Verificar extensão do arquivo
+        $allowedExtensions = [];
+        foreach ($allowedTypes as $type) {
+            switch ($type) {
+                case 'application/pdf':
+                    $allowedExtensions[] = 'pdf';
+                    break;
+                case 'image/jpeg':
+                    $allowedExtensions[] = 'jpg';
+                    $allowedExtensions[] = 'jpeg';
+                    break;
+                case 'image/png':
+                    $allowedExtensions[] = 'png';
+                    break;
             }
         }
+
+        $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            throw new Exception('Extensão de arquivo não permitida');
+        }
+
+        return true;
+    }
+
+    /**
+     * Gera nome de arquivo seguro
+     */
+    public static function generateSecureFilename($originalName, $prefix = '') {
+        $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+        $basename = pathinfo($originalName, PATHINFO_FILENAME);
+        
+        // Sanitizar nome base
+        $basename = preg_replace('/[^a-zA-Z0-9-_]/', '-', $basename);
+        $basename = trim($basename, '-');
+        
+        // Adicionar timestamp para unicidade
+        $timestamp = date('Ymd-His');
+        
+        return $prefix . $basename . '-' . $timestamp . '.' . $extension;
+    }
+
+    /**
+     * Implementa rate limiting usando configurações do .env
+     */
+    public static function checkRateLimit($action, $maxAttempts = null, $timeWindow = null) {
+        if ($maxAttempts === null) {
+            $maxAttempts = (int) EnvLoader::get('MAX_LOGIN_ATTEMPTS', 3);
+        }
+        if ($timeWindow === null) {
+            $timeWindow = (int) EnvLoader::get('SESSION_TIMEOUT', 300);
+        }
+
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $key = md5($action . $ip);
+        $filePath = sys_get_temp_dir() . '/forgiarini_rate_' . $key;
+
+        // Verificar se arquivo existe e está dentro da janela de tempo
+        if (file_exists($filePath)) {
+            $data = json_decode(file_get_contents($filePath), true);
+            if ($data && isset($data['count'], $data['first_attempt'])) {
+                $timeElapsed = time() - $data['first_attempt'];
+                
+                if ($timeElapsed < $timeWindow) {
+                    if ($data['count'] >= $maxAttempts) {
+                        return false; // Rate limit excedido
+                    }
+                    
+                    // Incrementar contador
+                    $data['count']++;
+                    file_put_contents($filePath, json_encode($data));
+                } else {
+                    // Janela de tempo expirou, resetar
+                    $newData = ['count' => 1, 'first_attempt' => time()];
+                    file_put_contents($filePath, json_encode($newData));
+                }
+            }
+        } else {
+            // Primeira tentativa
+            $newData = ['count' => 1, 'first_attempt' => time()];
+            file_put_contents($filePath, json_encode($newData));
+        }
+
+        return true;
+    }
+
+    /**
+     * Limpa rate limit para um IP/ação específica
+     */
+    public static function clearRateLimit($action) {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $key = md5($action . $ip);
+        $filePath = sys_get_temp_dir() . '/forgiarini_rate_' . $key;
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
+    /**
+     * Registra eventos de segurança
+     */
+    public static function logSecurityEvent($event, $data = []) {
+        if (!self::$logFile) {
+            self::init();
+        }
+
+        $logEntry = [
+            'timestamp' => date('c'),
+            'event' => $event,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'data' => $data
+        ];
+
+        $logLine = json_encode($logEntry) . "\n";
+        
+        // Escrever no arquivo de log
+        file_put_contents(self::$logFile, $logLine, FILE_APPEND | LOCK_EX);
+
+        // Em ambiente de desenvolvimento, também registrar no log do PHP
+        if (EnvLoader::get('ENVIRONMENT') === 'development') {
+            error_log("SECURITY: $event - " . json_encode($data));
+        }
+    }
+
+    /**
+     * Verifica se o IP está em uma lista de bloqueio
+     */
+    public static function isBlacklisted($ip = null) {
+        if ($ip === null) {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        }
+
+        // Lista básica de IPs suspeitos (pode ser expandida)
+        $blacklist = [
+            // IPs de exemplo - adicione IPs reais conforme necessário
+        ];
+
+        return in_array($ip, $blacklist);
+    }
+
+    /**
+     * Sanitiza entrada de string
+     */
+    public static function sanitizeString($input, $maxLength = 255) {
+        $cleaned = trim($input);
+        $cleaned = strip_tags($cleaned);
+        $cleaned = htmlspecialchars($cleaned, ENT_QUOTES, 'UTF-8');
+        
+        if ($maxLength > 0) {
+            $cleaned = substr($cleaned, 0, $maxLength);
+        }
+        
+        return $cleaned;
+    }
+
+    /**
+     * Valida token CSRF (para implementação futura)
+     */
+    public static function validateCSRFToken($token) {
+        if (!isset($_SESSION['csrf_token'])) {
+            return false;
+        }
+        
+        return hash_equals($_SESSION['csrf_token'], $token);
+    }
+
+    /**
+     * Gera token CSRF
+     */
+    public static function generateCSRFToken() {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        
+        return $_SESSION['csrf_token'];
+    }
+}
+
+// Inicializar automaticamente quando o arquivo for incluído
+SecurityHelper::init();
+
+?>
         
         // Inicializar contador para IP se não existir
         if (!isset($rateLimitData['requests'][$ip])) {

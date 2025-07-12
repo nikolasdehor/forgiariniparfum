@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="Forgiarini Parfum - Fragrâncias premium equivalentes com qualidade excepcional. Perfumes autorais e catálogo completo com os melhores preços.">
     <meta name="keywords" content="perfumes, fragrâncias, perfumes equivalentes, Forgiarini Parfum, perfumes premium, perfumes autorais">
     <meta name="author" content="Forgiarini Parfum">
@@ -45,6 +48,7 @@
     <!-- Critical CSS inline (será adicionado depois) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/ui-enhancements.css">
+    <link rel="stylesheet" href="assets/css/mobile-optimizations.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
@@ -70,6 +74,8 @@
     </script>
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Pular para o conteúdo principal</a>
+    
     <header class="header" role="banner">
         <div class="container">
             <div class="logo" role="img" aria-label="Logotipo Forgiarini Parfum">Forgiarini Parfum</div>
@@ -81,7 +87,7 @@
                     <li role="none"><a href="#prices" role="menuitem">Tabela de Valores</a></li>
                     <li role="none"><a href="#contact" role="menuitem">Contato</a></li>
                 </ul>
-                <button class="mobile-menu-toggle" aria-label="Abrir menu de navegação mobile" aria-expanded="false" aria-controls="main-nav">
+                <button class="mobile-menu-toggle" aria-label="Abrir menu de navegação mobile" aria-expanded="false" aria-controls="mobile-nav" type="button">
                     <i class="fas fa-bars" aria-hidden="true"></i>
                     <span class="sr-only">Menu</span>
                 </button>
@@ -89,10 +95,10 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <section id="home" class="hero" role="banner" aria-label="Seção principal - Forgiarini Parfum">
             <div class="video-background">
-                <video autoplay muted loop playsinline id="hero-video" aria-label="Vídeo promocional mostrando fragrâncias Forgiarini">
+                <video autoplay muted loop playsinline preload="metadata" id="hero-video" aria-label="Vídeo promocional mostrando fragrâncias Forgiarini">
                     <source src="assets/videos/Vídeo do WhatsApp de 2025-04-28 à(s) 13.56.15_49b7caeb.mp4" type="video/mp4">
                     <p>Seu navegador não suporta vídeos HTML5. <a href="assets/images/hero-fallback.jpg">Ver imagem alternativa</a></p>
                 </video>
@@ -162,7 +168,7 @@
         <div class="container">
             <h2>Conheça Nossa História</h2>
             <div class="video-container">
-                <video id="commercial-video" controls>
+                <video id="commercial-video" controls preload="metadata" playsinline>
                     <source src="assets/videos/Vídeo do WhatsApp de 2025-04-28 à(s) 13.56.15_49b7caeb.mp4" type="video/mp4">
                     Seu navegador não suporta a reprodução de vídeos.
                 </video>

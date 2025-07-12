@@ -58,39 +58,116 @@ async function getAllCatalogs() {
 
 // Create mobile navigation menu
 const createMobileNav = () => {
+    // Create mobile navigation overlay
+    const mobileNavOverlay = document.createElement('div');
+    mobileNavOverlay.classList.add('mobile-nav-overlay');
+    body.appendChild(mobileNavOverlay);
+
     const mobileNav = document.createElement('div');
     mobileNav.classList.add('mobile-nav');
 
     const closeButton = document.createElement('div');
     closeButton.classList.add('close-menu');
     closeButton.innerHTML = '<i class="fas fa-times"></i>';
+    closeButton.setAttribute('role', 'button');
+    closeButton.setAttribute('aria-label', 'Fechar menu de navegação');
+    closeButton.setAttribute('tabindex', '0');
     mobileNav.appendChild(closeButton);
 
     // Clone the main navigation links
     const mainNavUl = document.querySelector('.main-nav ul');
     const mobileNavUl = mainNavUl.cloneNode(true);
+    mobileNavUl.setAttribute('role', 'menu');
     mobileNav.appendChild(mobileNavUl);
 
     body.appendChild(mobileNav);
 
-    // Event listeners for mobile menu
-    mobileMenuToggle.addEventListener('click', () => {
+    // Improved mobile menu functionality
+    const openMobileMenu = () => {
         mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
         body.style.overflow = 'hidden';
+        body.style.position = 'fixed';
+        body.style.width = '100%';
+        
+        // Focus management for accessibility
+        const firstFocusableElement = mobileNav.querySelector('a, button, [tabindex]');
+        if (firstFocusableElement) {
+            firstFocusableElement.focus();
+        }
+        
+        // Add escape key listener
+        document.addEventListener('keydown', handleEscapeKey);
+    };
+
+    const closeMobileMenu = () => {
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        body.style.overflow = '';
+        body.style.position = '';
+        body.style.width = '';
+        
+        // Return focus to menu toggle
+        mobileMenuToggle.focus();
+        
+        // Remove escape key listener
+        document.removeEventListener('keydown', handleEscapeKey);
+    };
+
+    const handleEscapeKey = (e) => {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            closeMobileMenu();
+        }
+    };
+
+    // Touch and click event listeners
+    mobileMenuToggle.addEventListener('click', openMobileMenu);
+    mobileMenuToggle.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        openMobileMenu();
     });
 
-    closeButton.addEventListener('click', () => {
-        mobileNav.classList.remove('active');
-        body.style.overflow = '';
+    closeButton.addEventListener('click', closeMobileMenu);
+    closeButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        closeMobileMenu();
+    });
+
+    // Close menu when clicking on overlay
+    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    mobileNavOverlay.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        closeMobileMenu();
     });
 
     // Close menu when clicking on a link
     const mobileNavLinks = mobileNav.querySelectorAll('a');
     mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileNav.classList.remove('active');
-            body.style.overflow = '';
+        link.addEventListener('click', (e) => {
+            // Add small delay for smooth transition
+            setTimeout(closeMobileMenu, 150);
         });
+        
+        link.addEventListener('touchstart', (e) => {
+            // Add visual feedback for touch
+            link.style.backgroundColor = 'rgba(166, 124, 82, 0.1)';
+            setTimeout(() => {
+                link.style.backgroundColor = '';
+            }, 150);
+        });
+    });
+
+    // Keyboard navigation support
+    closeButton.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            closeMobileMenu();
+        }
+    });
+
+    // Prevent body scroll when menu is open
+    mobileNav.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
     });
 };
 
@@ -309,14 +386,200 @@ const handleMissingImages = () => {
     }
 };
 
+// Mobile optimization utilities
+const MobileOptimizations = {
+    // Detect if user is on mobile device
+    isMobile: () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               window.innerWidth <= 768 ||
+               ('ontouchstart' in window) ||
+               (navigator.maxTouchPoints > 0);
+    },
+
+    // Optimize video playback for mobile
+    optimizeVideoForMobile: () => {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            if (MobileOptimizations.isMobile()) {
+                // Reduce video quality on mobile to improve performance
+                video.setAttribute('preload', 'metadata');
+                
+                // Pause video when not in viewport to save battery
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            video.play().catch(e => console.log('Video autoplay prevented'));
+                        } else {
+                            video.pause();
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                observer.observe(video);
+                
+                // Add touch controls optimization
+                video.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                });
+            }
+        });
+    },
+
+    // Optimize images for mobile with better lazy loading
+    optimizeLazyLoadingForMobile: () => {
+        const lazyImages = document.querySelectorAll('img[data-src]');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        
+                        // Preload image
+                        const imageLoader = new Image();
+                        imageLoader.onload = () => {
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            img.classList.add('loaded');
+                        };
+                        imageLoader.src = img.dataset.src;
+                        
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: MobileOptimizations.isMobile() ? '50px' : '100px'
+            });
+
+            lazyImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // Fallback for older browsers
+            lazyImages.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+            });
+        }
+    },
+
+    // Optimize scroll performance
+    optimizeScrollPerformance: () => {
+        let ticking = false;
+
+        const updateScrollEffects = () => {
+            // Only update header scroll effect
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            ticking = false;
+        };
+
+        const requestScrollUpdate = () => {
+            if (!ticking) {
+                requestAnimationFrame(updateScrollEffects);
+                ticking = true;
+            }
+        };
+
+        // Use passive scroll listener for better performance
+        window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+    },
+
+    // Add touch feedback for better UX
+    addTouchFeedback: () => {
+        const touchElements = document.querySelectorAll('.btn, .main-nav a, .social-icon');
+        
+        touchElements.forEach(element => {
+            element.addEventListener('touchstart', function(e) {
+                this.style.transform = 'scale(0.98)';
+                this.style.transition = 'transform 0.1s ease';
+            }, { passive: true });
+            
+            element.addEventListener('touchend', function(e) {
+                setTimeout(() => {
+                    this.style.transform = '';
+                    this.style.transition = '';
+                }, 100);
+            }, { passive: true });
+        });
+    },
+
+    // Optimize font loading for mobile
+    optimizeFontLoading: () => {
+        if (MobileOptimizations.isMobile()) {
+            // Add font-display: swap for better performance
+            const fontLinks = document.querySelectorAll('link[href*="fonts.googleapis.com"]');
+            fontLinks.forEach(link => {
+                const url = new URL(link.href);
+                url.searchParams.set('display', 'swap');
+                link.href = url.toString();
+            });
+        }
+    },
+
+    // Reduce animations on low-end devices
+    respectReducedMotion: () => {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        
+        if (prefersReducedMotion.matches) {
+            document.documentElement.style.setProperty('--transition', 'none');
+            
+            // Remove animations from videos
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                video.removeAttribute('autoplay');
+            });
+        }
+    }
+};
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize mobile optimizations first
+    MobileOptimizations.optimizeFontLoading();
+    MobileOptimizations.respectReducedMotion();
+    
+    // Initialize core functionality
     createMobileNav();
-    headerScrollEffect();
+    MobileOptimizations.optimizeScrollPerformance();
     smoothScrolling();
     revealOnScroll();
     handleMissingImages();
     handleParallax();
+    
+    // Initialize mobile-specific optimizations
+    MobileOptimizations.optimizeVideoForMobile();
+    MobileOptimizations.optimizeLazyLoadingForMobile();
+    MobileOptimizations.addTouchFeedback();
+    
+    console.log('Forgiarini Parfum website loaded successfully!');
+    
+    // Performance monitoring for mobile
+    if (MobileOptimizations.isMobile()) {
+        // Monitor performance on mobile devices
+        if ('connection' in navigator) {
+            const connection = navigator.connection;
+            console.log(`Network: ${connection.effectiveType}, Downlink: ${connection.downlink}Mbps`);
+            
+            // Adjust features based on connection speed
+            if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+                // Disable non-essential animations and features for slow connections
+                document.documentElement.style.setProperty('--transition', 'none');
+                
+                // Disable autoplay videos
+                const videos = document.querySelectorAll('video[autoplay]');
+                videos.forEach(video => {
+                    video.removeAttribute('autoplay');
+                    video.setAttribute('preload', 'none');
+                });
+            }
+        }
+    }
+    MobileOptimizations.optimizeFontLoading();
+    MobileOptimizations.respectReducedMotion();
 
     // Configurar o botão de catálogo para abrir o PDF mais recente
     const catalogBtn = document.getElementById('catalog-btn');

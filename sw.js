@@ -1,16 +1,20 @@
 // Service Worker para Forgiarini Parfum PWA
-const CACHE_NAME = 'forgiarini-parfum-v1.0.0';
-const STATIC_CACHE = 'forgiarini-static-v1';
-const DYNAMIC_CACHE = 'forgiarini-dynamic-v1';
+const CACHE_NAME = 'forgiarini-parfum-v2.1';
+const STATIC_CACHE = 'forgiarini-static-v2';
+const DYNAMIC_CACHE = 'forgiarini-dynamic-v2';
 
 // Arquivos para cache estático (sempre disponíveis offline)
 const STATIC_FILES = [
     '/',
     '/index.html',
     '/assets/css/style.css',
+    '/assets/css/ui-enhancements.css',
+    '/assets/css/mobile-optimizations.css',
     '/assets/js/script.js',
+    '/assets/js/ui-enhancements.js',
     '/assets/js/performance.js',
     '/assets/js/accessibility.js',
+    '/assets/js/pwa.js',
     '/manifest.json',
     '/assets/images/hero-background.jpg',
     '/assets/images/signature-perfume.jpg',

@@ -22,6 +22,7 @@
 }
 
 html {
+    -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
 }
@@ -209,9 +210,41 @@ section:nth-child(even) {
 
 .mobile-menu-toggle {
     display: none;
+    background: none;
+    border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark-color);
+    color: var(--primary-color);
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    min-height: 48px;
+    min-width: 48px;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-toggle:hover,
+.mobile-menu-toggle:focus {
+    background-color: rgba(166, 124, 82, 0.1);
+    transform: scale(1.1);
+}
+
+.mobile-menu-toggle:active {
+    transform: scale(0.95);
+}
+
+.mobile-menu-toggle .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /* Hero Section */
@@ -452,6 +485,9 @@ section:nth-child(even) {
 video {
     width: 100%;
     display: block;
+    -webkit-playsinline: true;
+    -moz-playsinline: true;
+    playsinline: true;
 }
 
 /* Prices Section */
@@ -824,15 +860,17 @@ video {
 .mobile-nav {
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 300px;
+    right: -100%;
+    width: 280px;
+    max-width: 85vw;
     height: 100vh;
     background-color: white;
     z-index: 2000;
-    padding: 2rem;
-    transition: all 0.4s ease;
+    padding: 2rem 1.5rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .mobile-nav.active {
@@ -841,72 +879,125 @@ video {
 
 .mobile-nav ul {
     list-style: none;
-    margin-top: 2rem;
+    margin-top: 3rem;
+    padding: 0;
 }
 
 .mobile-nav li {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .mobile-nav a {
-    display: block;
-    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
     color: var(--dark-color);
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 0.5rem;
+    border-radius: 8px;
     transition: all 0.3s ease;
     font-weight: 500;
+    min-height: 48px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-nav a:hover {
+.mobile-nav a:hover,
+.mobile-nav a:focus {
     color: var(--primary-color);
-    padding-left: 10px;
+    background-color: rgba(166, 124, 82, 0.1);
+    transform: translateX(5px);
+}
+
+.mobile-nav a:active {
+    transform: translateX(5px) scale(0.98);
 }
 
 .close-menu {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: var(--dark-color);
     cursor: pointer;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 1.5rem;
+    right: 1.5rem;
     transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.close-menu:hover {
+.close-menu:hover,
+.close-menu:focus {
     color: var(--primary-color);
+    background-color: rgba(166, 124, 82, 0.1);
     transform: rotate(90deg);
+}
+
+.close-menu:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* Mobile menu overlay */
+.mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(2px);
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ================================
    RESPONSIVE DESIGN MELHORADO
    ================================ */
 
-/* Mobile Styles (max-width: 767px) */
-@media (max-width: 767px) {
+/* Tablet Styles (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        width: 95%;
+        padding: 0 20px;
+    }
+    
+    section {
+        padding: 4rem 0;
+    }
+    
+    h1 {
+        font-size: 3.2rem;
+    }
+    
+    h2 {
+        font-size: 2.2rem;
+    }
+}
+
+/* Mobile Landscape and small tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    html {
+        font-size: 95%;
+    }
+
     .container {
         width: 95%;
         padding: 0 15px;
     }
 
-    h1 {
-        font-size: 2.5rem;
-        line-height: 1.2;
-    }
-
-    h2 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .hero h1 {
-        font-size: 2.8rem;
-        margin-bottom: 1rem;
-    }
-
-    .hero p {
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
+    .header .container {
+        padding: 1rem 15px;
     }
 
     .main-nav ul {
@@ -914,7 +1005,54 @@ video {
     }
 
     .mobile-menu-toggle {
-        display: block;
+        display: flex;
+    }
+
+    .hero {
+        min-height: 100vh;
+        padding: 0 15px;
+    }
+
+    .hero-content {
+        padding: 2rem 1rem;
+        max-width: 100%;
+    }
+
+    .hero h1 {
+        font-size: 2.8rem;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        min-height: 48px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    section {
+        padding: 3rem 0;
     }
 
     .about-content,
@@ -929,22 +1067,22 @@ video {
         flex-direction: column-reverse;
     }
 
-    .cta-buttons {
-        flex-direction: column;
-        gap: 1rem;
+    .about-text, .about-image,
+    .signature-image, .signature-text,
+    .prices-image, .prices-text {
         width: 100%;
+        max-width: 100%;
     }
 
-    .btn {
+    .video-container {
         width: 100%;
-        text-align: center;
-        padding: 1rem 2rem;
-        font-size: 1rem;
-        min-height: 44px;
+        padding: 0 15px;
     }
 
-    section {
-        padding: 3rem 0;
+    .video-container video {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
     }
 
     .footer-content {
@@ -953,77 +1091,383 @@ video {
         gap: 2rem;
     }
 
-    /* Melhorar toque em dispositivos móveis */
+    /* Melhorar interações touch */
     .main-nav a,
-    .social-icon {
+    .social-icon,
+    .btn {
+        -webkit-tap-highlight-color: transparent;
         min-height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Otimizar vídeo para mobile */
-    #hero-video {
-        object-position: center;
+    /* Otimizar imagens para mobile */
+    img {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     /* Melhorar legibilidade */
     p {
         font-size: 1rem;
         line-height: 1.6;
+        margin-bottom: 1.5rem;
     }
 }
 
-/* Extra small devices (portrait phones, less than 576px) */
-@media (max-width: 575px) {
-    .hero h1 {
-        font-size: 2.2rem;
-    }
-
-    .hero p {
-        font-size: 1rem;
-    }
-
-    h2 {
-        font-size: 1.8rem;
+/* Mobile Portrait (max-width: 576px) */
+@media (max-width: 576px) {
+    html {
+        font-size: 90%;
     }
 
     .container {
         padding: 0 10px;
     }
 
+    .hero h1 {
+        font-size: 2.2rem;
+        line-height: 1.1;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.4rem;
+    }
+
     .btn {
         padding: 0.8rem 1.5rem;
         font-size: 0.9rem;
+        min-height: 44px;
+    }
+
+    section {
+        padding: 2.5rem 0;
+    }
+
+    .cta-buttons {
+        gap: 0.8rem;
+    }
+
+    /* Ajustar espaçamentos menores */
+    .about-content,
+    .signature-content,
+    .prices-content {
+        gap: 1.5rem;
+    }
+
+    /* Otimizar footer para mobile pequeno */
+    .footer-content {
+        gap: 1.5rem;
+    }
+
+    .footer-info h3,
+    .footer-contact h3,
+    .footer-social h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
     }
 }
 
-/* Landscape orientation adjustments */
-@media (max-height: 500px) and (orientation: landscape) {
+/* Extra small devices (max-width: 400px) */
+@media (max-width: 400px) {
+    .hero h1 {
+        font-size: 1.9rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+
+    .container {
+        padding: 0 8px;
+    }
+
+    .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
     .hero {
         min-height: 100vh;
+        display: flex;
+        align-items: center;
     }
 
     .hero-content {
         padding: 1rem;
+        text-align: center;
     }
 
     .hero h1 {
         font-size: 2rem;
         margin-bottom: 0.5rem;
+        line-height: 1.1;
     }
 
     .hero p {
         font-size: 0.9rem;
         margin-bottom: 1rem;
+        line-height: 1.4;
     }
 
     .cta-buttons {
+        flex-direction: row;
         gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
     .btn {
         padding: 0.6rem 1.2rem;
         font-size: 0.8rem;
+        min-height: 40px;
+        flex: 1;
+        min-width: 140px;
+    }
+
+    section {
+        padding: 2rem 0;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Otimizações para telas de alta densidade */
+    .hero {
+        background-attachment: scroll;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .btn:hover,
+    .main-nav a:hover,
+    .social-icon:hover {
+        transform: none;
+    }
+
+    /* Improve touch targets */
+    .btn,
+    .main-nav a,
+    .social-icon,
+    .mobile-menu-toggle,
+    .close-menu {
+        min-height: 48px;
+        min-width: 48px;
+    }
+
+    /* Add active states for touch feedback */
+    .btn:active {
+        transform: scale(0.98);
+        background-color: var(--primary-dark);
+    }
+
+    .main-nav a:active,
+    .social-icon:active {
+        background-color: rgba(166, 124, 82, 0.1);
+    }
+}
+
+/* ================================
+   MOBILE-SPECIFIC IMPROVEMENTS
+   ================================ */
+
+/* Optimize scrolling performance */
+html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Improve tap targets for mobile */
+.btn,
+.main-nav a,
+.social-icon,
+.mobile-menu-toggle,
+.close-menu {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Better mobile video handling */
+video {
+    -webkit-playsinline: true;
+    -moz-playsinline: true;
+}
+
+/* Improve mobile text readability */
+@media (max-width: 768px) {
+    body {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    
+    /* Optimize image loading and display */
+    img {
+        image-rendering: auto;
+        image-rendering: crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+    }
+    
+    /* Better mobile form elements */
+    input, 
+    textarea, 
+    select {
+        font-size: 16px; /* Prevent zoom on iOS */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+}
+
+/* Loading states for better UX */
+.lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lazy.loaded {
+    opacity: 1;
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+    /* Reduce motion for better performance */
+    .animate-on-scroll {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    /* Optimize hover states for touch */
+    .btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    /* Better mobile menu animations */
+    .mobile-nav {
+        will-change: transform;
+    }
+    
+    .mobile-nav.active {
+        will-change: auto;
+    }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+    /* Focus indicators for keyboard navigation */
+    .btn:focus,
+    .main-nav a:focus,
+    .mobile-nav a:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    /* Skip to content link for screen readers */
+    .skip-to-content {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--primary-color);
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        z-index: 9999;
+        transition: top 0.3s ease;
+    }
+    
+    .skip-to-content:focus {
+        top: 6px;
+    }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+    :root {
+        --light-color: #1a1a1a;
+        --text-color: #e0e0e0;
+        --dark-color: #ffffff;
+    }
+    
+    .header {
+        background-color: rgba(26, 26, 26, 0.95);
+    }
+    
+    .mobile-nav {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+}
+
+/* Print styles */
+@media print {
+    .header,
+    .mobile-nav,
+    .mobile-menu-toggle,
+    .video-background,
+    video {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: black;
+        background: white;
+    }
+}
+
+/* ================================
+   PERFORMANCE OPTIMIZATIONS
+   ================================ */
+
+/* GPU acceleration for smooth animations */
+.mobile-nav,
+.mobile-nav-overlay,
+.hero-content,
+.btn {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Optimize repaints and reflows */
+.header.scrolled {
+    transform: translateZ(0);
+    will-change: transform, background-color;
+}
+
+/* Reduce layout thrashing */
+@media (max-width: 768px) {
+    .container {
+        contain: layout style;
+    }
+    
+    section {
+        contain: layout;
     }
 }
