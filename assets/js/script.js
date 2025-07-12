@@ -596,5 +596,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// REMOVIDO: Funções de catálogo JavaScript problemáticas
-// O botão de catálogo agora usa apenas o link direto do HTML
+// Atualizar link do catálogo dinamicamente
+document.addEventListener('DOMContentLoaded', async function() {
+    const catalogBtn = document.getElementById('catalog-btn');
+    if (catalogBtn) {
+        try {
+            const response = await fetch('assets/php/get_latest_pdf.php');
+            const data = await response.json();
+            
+            if (data.success && data.pdf_url) {
+                // Atualizar o href do botão com o PDF mais recente
+                catalogBtn.href = data.pdf_url;
+                console.log('✅ Catálogo atualizado:', data.pdf_url);
+            } else {
+                console.log('⚠️ Mantendo PDF padrão no HTML');
+            }
+        } catch (error) {
+            console.log('⚠️ Erro ao buscar PDF mais recente, usando padrão:', error);
+            // Mantém o link padrão do HTML como fallback
+        }
+    }
+});
