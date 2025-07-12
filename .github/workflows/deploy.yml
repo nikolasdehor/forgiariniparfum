@@ -162,6 +162,7 @@ jobs:
           **/yarn.lock
           **/*.md
           **/tests/**
+          **/scripts/**          # Scripts de desenvolvimento/segurança - não necessários em produção
           **/.vscode/**
           **/.idea/**
           **/logs/**

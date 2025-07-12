@@ -49,14 +49,9 @@ cache/
 uploads/temp/
 temp/
 
-# Pasta scripts completa - TODOS os scripts bloqueados por segurança
-scripts/
-# Mas permitir alguns scripts específicos que são seguros
-!scripts/check-security.sh
-!scripts/security-audit.sh
-!scripts/test-env-config.sh
-!scripts/validate-complete-auth.sh
-!scripts/validate-complete-env-system.sh
+# Pasta scripts completa - mantida no git mas não enviada para produção
+# Os scripts são excluídos do deploy via GitHub Actions
+# mas mantidos no repositório para versionamento e backup
 *-auth.html
 *-deploy.html
 test-*.html
