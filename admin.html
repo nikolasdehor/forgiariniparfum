@@ -432,7 +432,7 @@
             // Função para verificar a senha
             async function verifyPassword(password) {
                 try {
-                    const response = await fetch('assets/php/check_password.php', {
+                    const response = await fetch('assets/php/check_password_simple.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
