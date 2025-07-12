@@ -1,4 +1,27 @@
 /* ================================
+   FIX CRÍTICO: Remover blur problematico
+   ================================ */
+
+/* Garantir que NENHUM elemento tenha backdrop-filter ativo quando menu mobile fechar */
+body:not(.menu-open) * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Forçar reset de blur para mobile nav overlay */
+.mobile-nav-overlay:not(.active) {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+}
+
+/* Garantir que o body principal não tenha blur */
+body {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* ================================
    CORREÇÕES ESPECÍFICAS PARA MENU MÓVEL
    ================================ */
 
