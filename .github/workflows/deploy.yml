@@ -151,6 +151,7 @@ jobs:
         server-dir: /
 
         # Arquivos a serem excluídos do upload
+        # Inclui scripts de desenvolvimento que não devem ir para produção
         exclude: |
           **/.git*
           **/.git*/**
@@ -162,7 +163,7 @@ jobs:
           **/yarn.lock
           **/*.md
           **/tests/**
-          **/scripts/**          # Scripts de desenvolvimento/segurança - não necessários em produção
+          **/scripts/**
           **/.vscode/**
           **/.idea/**
           **/logs/**
