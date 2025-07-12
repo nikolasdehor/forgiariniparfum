@@ -167,6 +167,7 @@ jobs:
           **/.vscode/**
           **/.idea/**
           **/logs/**
+          **/.ftp-deploy-sync-ignore
 
         # Não limpar arquivos remotos
         dangerous-clean-slate: false

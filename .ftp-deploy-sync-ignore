@@ -1,0 +1,36 @@
+# Arquivos e pastas a serem ignorados no deploy FTP
+# Este arquivo serve como backup da configuração YAML
+
+# Controle de versão
+**/.git*
+**/.git*/**
+
+# Dependências
+**/node_modules/**
+
+# Arquivos de ambiente
+**/.env*
+
+# Documentação
+**/README.md
+**/*.md
+
+# GitHub e CI/CD
+**/.github/**
+
+# Configurações de projeto
+**/package*.json
+**/yarn.lock
+
+# Testes
+**/tests/**
+
+# Scripts de desenvolvimento - CRÍTICO: não enviar para produção
+**/scripts/**
+
+# IDEs
+**/.vscode/**
+**/.idea/**
+
+# Logs
+**/logs/**
