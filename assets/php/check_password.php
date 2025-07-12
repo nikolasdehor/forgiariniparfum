@@ -4,11 +4,20 @@
  * Usa as configurações do arquivo .env para maior segurança
  */
 
-// Headers de segurança
+// Headers de segurança e CORS
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Tratar requisições OPTIONS (CORS preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 // Incluir o carregador de ambiente
 require_once 'env_loader.php';

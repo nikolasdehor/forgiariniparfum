@@ -1,4 +1,55 @@
 /* ================================
+   CORREÇÕES ESPECÍFICAS PARA MENU MÓVEL
+   ================================ */
+
+/* Corrigir bug do menu sanduíche */
+@media (max-width: 768px) {
+    /* Garantir que o menu mobile não cause conflitos */
+    .mobile-nav {
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .mobile-nav.active {
+        transform: translateX(0);
+    }
+    
+    /* Garantir que o overlay funcione corretamente */
+    .mobile-nav-overlay {
+        pointer-events: none;
+    }
+    
+    .mobile-nav-overlay.active {
+        pointer-events: all;
+    }
+    
+    /* Prevenir scroll issues quando menu está aberto */
+    body.menu-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Corrigir z-index conflicts */
+    .header {
+        position: relative;
+        z-index: 1000;
+    }
+    
+    .mobile-menu-toggle {
+        z-index: 2001;
+        position: relative;
+    }
+    
+    /* Smooth closing animation */
+    .mobile-nav:not(.active) {
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+}
+
+/* ================================
    MOBILE-FIRST OPTIMIZATIONS
    ================================ */
 

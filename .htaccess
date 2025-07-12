@@ -69,6 +69,19 @@ Options -Indexes
 </IfModule>
 
 # ================================================================
+# CONFIGURAÇÕES PARA ARQUIVOS PHP
+# ================================================================
+
+# Garantir que PHP seja executado
+AddType application/x-httpd-php .php
+
+# Proteger env_loader.php de acesso direto (permite include/require)
+<Files "env_loader.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# ================================================================
 # REDIRECIONAMENTOS SIMPLES
 # ================================================================
 
@@ -76,7 +89,7 @@ Options -Indexes
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/assets/
-RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|pdf|mp4|woff|woff2|ico)$
+RewriteCond %{REQUEST_URI} !\.(css|js|php|png|jpg|jpeg|gif|pdf|mp4|woff|woff2|ico)$
 RewriteRule ^(.*)$ /index.html [L]
 
 # ================================================================

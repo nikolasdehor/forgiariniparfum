@@ -86,9 +86,7 @@ const createMobileNav = () => {
     const openMobileMenu = () => {
         mobileNav.classList.add('active');
         mobileNavOverlay.classList.add('active');
-        body.style.overflow = 'hidden';
-        body.style.position = 'fixed';
-        body.style.width = '100%';
+        body.classList.add('menu-open');
         
         // Focus management for accessibility
         const firstFocusableElement = mobileNav.querySelector('a, button, [tabindex]');
@@ -103,12 +101,12 @@ const createMobileNav = () => {
     const closeMobileMenu = () => {
         mobileNav.classList.remove('active');
         mobileNavOverlay.classList.remove('active');
-        body.style.overflow = '';
-        body.style.position = '';
-        body.style.width = '';
+        body.classList.remove('menu-open');
         
         // Return focus to menu toggle
-        mobileMenuToggle.focus();
+        if (mobileMenuToggle) {
+            mobileMenuToggle.focus();
+        }
         
         // Remove escape key listener
         document.removeEventListener('keydown', handleEscapeKey);
@@ -144,16 +142,13 @@ const createMobileNav = () => {
     const mobileNavLinks = mobileNav.querySelectorAll('a');
     mobileNavLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            // Add small delay for smooth transition
-            setTimeout(closeMobileMenu, 150);
+            // Fechar imediatamente para evitar bugs visuais
+            closeMobileMenu();
         });
         
-        link.addEventListener('touchstart', (e) => {
-            // Add visual feedback for touch
-            link.style.backgroundColor = 'rgba(166, 124, 82, 0.1)';
-            setTimeout(() => {
-                link.style.backgroundColor = '';
-            }, 150);
+        link.addEventListener('touchend', (e) => {
+            // Fechar imediatamente no touch também
+            closeMobileMenu();
         });
     });
 
@@ -168,6 +163,18 @@ const createMobileNav = () => {
     // Prevent body scroll when menu is open
     mobileNav.addEventListener('touchmove', (e) => {
         e.stopPropagation();
+    });
+
+    // Close menu on window resize to prevent layout issues
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+
+    // Ensure menu is closed when page loads
+    window.addEventListener('load', () => {
+        closeMobileMenu();
     });
 };
 
