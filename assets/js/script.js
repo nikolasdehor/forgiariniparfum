@@ -7,36 +7,45 @@ const body = document.body;
 async function getLatestCatalog() {
     try {
         const response = await fetch('assets/php/get_catalog_info.php');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         if (data.success && data.latest) {
             return data.latest.file_path;
         } else {
-            // Fallback: tentar encontrar qualquer PDF na pasta
-            const fallbackPaths = [
-                'assets/pdf/perfume-catalog.pdf',
-                'assets/pdf/catalogo.pdf',
-                'assets/pdf/catalog.pdf'
-            ];
-
-            for (const path of fallbackPaths) {
-                try {
-                    const testResponse = await fetch(path, { method: 'HEAD' });
-                    if (testResponse.ok) {
-                        return path;
-                    }
-                } catch (e) {
-                    // Continuar tentando outros caminhos
-                }
-            }
-
-            // Se nenhum arquivo for encontrado, retornar o primeiro como fallback
-            return fallbackPaths[0];
+            throw new Error('No catalog found in PHP response');
         }
     } catch (error) {
-        console.error('Erro ao carregar o catálogo:', error);
-        // Fallback para arquivo padrão
-        return 'assets/pdf/perfume-catalog.pdf';
+        console.error('Erro ao carregar o catálogo via PHP:', error);
+        
+        // Fallback: tentar encontrar o arquivo real que existe
+        const fallbackPaths = [
+            'assets/pdf/catalogo-20250623-130108.pdf', // Arquivo real que existe
+            'assets/pdf/perfume-catalog.pdf',
+            'assets/pdf/catalogo.pdf',
+            'assets/pdf/catalog.pdf'
+        ];
+
+        for (const path of fallbackPaths) {
+            try {
+                const testResponse = await fetch(path, { method: 'HEAD' });
+                if (testResponse.ok) {
+                    console.log('Catálogo encontrado via fallback:', path);
+                    return path;
+                }
+            } catch (e) {
+                console.warn('Fallback path failed:', path, e);
+                // Continuar tentando outros caminhos
+            }
+        }
+
+        // Se nenhum arquivo for encontrado, retornar o primeiro como último recurso
+        console.warn('Nenhum catálogo encontrado, usando fallback padrão');
+        return fallbackPaths[0];
     }
 }
 
@@ -591,11 +600,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configurar o botão de catálogo para abrir o PDF mais recente
     const catalogBtn = document.getElementById('catalog-btn');
     if (catalogBtn) {
+        console.log('Botão de catálogo encontrado, configurando evento...');
+        
         catalogBtn.addEventListener('click', async function(e) {
             e.preventDefault();
-            const catalogPath = await getLatestCatalog();
-            window.open(catalogPath, '_blank');
+            console.log('Botão de catálogo clicado!');
+            
+            try {
+                // Primeiro, tentar obter o catálogo mais recente via PHP
+                const catalogPath = await getLatestCatalog();
+                console.log('Tentando abrir catálogo:', catalogPath);
+                
+                // Verificar se o caminho é válido
+                if (catalogPath && catalogPath !== '') {
+                    window.open(catalogPath, '_blank');
+                } else {
+                    throw new Error('Caminho do catálogo está vazio');
+                }
+            } catch (error) {
+                console.error('Erro ao obter catálogo via PHP, tentando fallback direto:', error);
+                
+                // Fallback direto para o arquivo que sabemos que existe
+                const directPath = 'assets/pdf/catalogo-20250623-130108.pdf';
+                console.log('Abrindo catálogo via fallback direto:', directPath);
+                window.open(directPath, '_blank');
+            }
         });
+    } else {
+        console.error('Botão de catálogo não encontrado!');
     }
 
     // Adicionar animação de pulse para o logo
@@ -655,3 +687,26 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.style.visibility = 'hidden';
     });
 });
+
+// Função de backup simples para garantir que o catálogo abra
+function openCatalogSimple() {
+    const catalogPath = 'assets/pdf/catalogo-20250623-130108.pdf';
+    console.log('Abrindo catálogo via função simples:', catalogPath);
+    window.open(catalogPath, '_blank');
+}
+
+// Adicionar função global para debug
+window.openCatalog = openCatalogSimple;
+
+// Verificação adicional após um tempo para garantir que o evento foi vinculado
+setTimeout(() => {
+    const catalogBtn = document.getElementById('catalog-btn');
+    if (catalogBtn && !catalogBtn.hasAttribute('data-listener-added')) {
+        console.log('Adicionando listener de backup para o botão de catálogo...');
+        catalogBtn.setAttribute('data-listener-added', 'true');
+        catalogBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openCatalogSimple();
+        });
+    }
+}, 1000);

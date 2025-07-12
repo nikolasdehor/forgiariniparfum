@@ -51,6 +51,12 @@ temp/
 
 # Pasta scripts completa - TODOS os scripts bloqueados por segurança
 scripts/
+# Mas permitir alguns scripts específicos que são seguros
+!scripts/check-security.sh
+!scripts/security-audit.sh
+!scripts/test-env-config.sh
+!scripts/validate-complete-auth.sh
+!scripts/validate-complete-env-system.sh
 *-auth.html
 *-deploy.html
 test-*.html
